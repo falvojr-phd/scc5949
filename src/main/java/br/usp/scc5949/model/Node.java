@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import br.usp.scc5949.util.MapUtil;
+import dnl.utils.text.table.TextTable;
+
 public class Node {
 	
 	private String id;
@@ -65,10 +68,16 @@ public class Node {
 				.collect(Collectors.toMap(Map.Entry::getKey, e -> evalAverage(e.getValue())));
 	}
 
+	public void print() {
+		final String[] header = { this.id, "Probabilities" };
+		final Object[][] data = MapUtil.parseToMatrix(this.probabilities);
+		final TextTable textTable = new TextTable(header , data);
+		textTable.printTable();
+		System.out.println();
+	}
+
 	private double evalAverage(Long valueCount) {
 		final double valuesCount = (double) this.values.size();
 		return valueCount / valuesCount;
 	}
-
-
 }

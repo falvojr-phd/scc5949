@@ -46,6 +46,7 @@ public class Main {
 			}
 			for (Node node : nodes) {
 				node.evalMarginalProbabilities();
+				node.print();
 			}
 		}
 		return nodes;
