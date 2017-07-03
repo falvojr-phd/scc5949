@@ -77,8 +77,7 @@ public class Node {
 			String groupKey = "";
 			final Map<String, Long> auxProbabilities = new TreeMap<>();
 
-			final TreeMultiset<String> ordenedValues = TreeMultiset.create(this.values);
-			final Set<Entry<String>> entrySet = ordenedValues.entrySet();
+			final Set<Entry<String>> entrySet = TreeMultiset.create(this.values).entrySet();
 			for (Entry<String> entry : entrySet) {
 				final String[] values = entry.getElement().split("\\s+");
 				final String key = Arrays.toString(Arrays.copyOf(values, values.length - 1));
