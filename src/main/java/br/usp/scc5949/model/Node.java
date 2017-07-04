@@ -11,18 +11,36 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.TreeMultiset;
 
+import br.usp.scc5949.util.MapUtils;
 import dnl.utils.text.table.TextTable;
 
+/**
+ * Node abstraction for marginal and conditional probabilities.
+ * 
+ * @author falvojr
+ */
 public class Node {
 
+	private Integer id;
 	private String name;
 	private List<Integer> influences;
-	private List<String> values;
-	private Map<String, Double> probabilities;
+	private List<String> values = new ArrayList<>();;
+	private Map<String, Double> probabilities = new TreeMap<>();
 
-	public Node(String name, List<Integer> influences) {
+	public Node(Integer id, String name, List<Integer> influences) {
+		this.id = id;
 		this.name = name;
 		this.influences = influences;
+		// Add node identity on last position.
+		this.influences.add(id);
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -34,9 +52,6 @@ public class Node {
 	}
 
 	public List<Integer> getInfluences() {
-		if (influences == null) {
-			influences = new ArrayList<>();
-		}
 		return influences;
 	}
 
@@ -45,9 +60,6 @@ public class Node {
 	}
 
 	public List<String> getValues() {
-		if (values == null) {
-			values = new ArrayList<>();
-		}
 		return values;
 	}
 
@@ -55,31 +67,22 @@ public class Node {
 		this.values = values;
 	}
 
-	public Map<String, Double> getProbabilities() {
-		return probabilities;
-	}
-
-	public void setProbabilities(Map<String, Double> probabilities) {
-		this.probabilities = probabilities;
-	}
-
-	public void evalProbabilities() {
+	public Node evalProbabilities() {
 		if (this.influences.size() == 1) {
 			final Double sum = (double) this.values.size();
 			final Map<String, Double> mappedValues = this.values.stream()
 					.collect(Collectors.groupingBy(e -> e, Collectors.counting())).entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getKey, e -> evalAverage(e.getValue(), sum)));
-			this.probabilities = new TreeMap<>(mappedValues);
+			this.probabilities.putAll(mappedValues);
 
 		} else {
-			this.probabilities = new TreeMap<>();
-
 			String groupKey = "";
 			final Map<String, Long> auxProbabilities = new TreeMap<>();
 
 			final Set<Entry<String>> entrySet = TreeMultiset.create(this.values).entrySet();
 			for (Entry<String> entry : entrySet) {
 				final String[] values = entry.getElement().split("\\s+");
+				// Ignores node identity (last position) in the key.
 				final String key = Arrays.toString(Arrays.copyOf(values, values.length - 1));
 				if (!groupKey.equals(key)) {
 					groupKey = key;
@@ -94,11 +97,12 @@ public class Node {
 				auxProbabilities.put(entry.getElement(), Long.valueOf(entry.getCount()));
 			}
 		}
+		return this;
 	}
 
-	public void print() {
+	public void printProbabilities() {
 		final String[] header = { this.name, "Probabilities" };
-		final Object[][] data = getMatrixProbabilities();
+		final Object[][] data = MapUtils.parseToMatrix(this.probabilities);
 		final TextTable textTable = new TextTable(header, data);
 		textTable.printTable();
 		System.out.println();
@@ -106,18 +110,5 @@ public class Node {
 
 	private double evalAverage(Long valueCount, Double sum) {
 		return valueCount / sum;
-	}
-
-	private Object[][] getMatrixProbabilities() {
-		Object[][] twoDarray = new Object[this.probabilities.size()][2];
-
-		Object[] keys = this.probabilities.keySet().toArray();
-		Object[] values = this.probabilities.values().toArray();
-
-		for (int row = 0; row < twoDarray.length; row++) {
-			twoDarray[row][0] = keys[row];
-			twoDarray[row][1] = values[row];
-		}
-		return twoDarray;
 	}
 }
