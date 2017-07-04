@@ -68,6 +68,7 @@ public class Node {
 	}
 
 	public Node evalProbabilities() {
+		// Verify if node is marginal (only yourself influence)
 		if (this.influences.size() == 1) {
 			final Double sum = (double) this.values.size();
 			final Map<String, Double> mappedValues = this.values.stream()
