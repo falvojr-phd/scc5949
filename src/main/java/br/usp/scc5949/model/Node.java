@@ -67,7 +67,7 @@ public class Node {
 		this.values = values;
 	}
 
-	public Node evalProbabilities() {
+	public NodePrinter evalProbabilities() {
 		// Verify if node is marginal (only yourself influence)
 		if (this.influences.size() == 1) {
 			final Double sum = (double) this.values.size();
@@ -98,18 +98,22 @@ public class Node {
 				auxProbabilities.put(entry.getElement(), Long.valueOf(entry.getCount()));
 			}
 		}
-		return this;
+		return new NodePrinter();
 	}
-
-	public void printProbabilities() {
-		final String[] header = { this.name, "Probabilities" };
-		final Object[][] data = MapUtils.parseToMatrix(this.probabilities);
-		final TextTable textTable = new TextTable(header, data);
-		textTable.printTable();
-		System.out.println();
-	}
-
+	
 	private double evalAverage(Long valueCount, Double sum) {
 		return valueCount / sum;
+	}
+	
+	public class NodePrinter {
+
+		public void printProbabilities() {
+			final String[] header = { name, "Probabilities" };
+			final Object[][] data = MapUtils.parseToMatrix(probabilities);
+			final TextTable textTable = new TextTable(header, data);
+			textTable.printTable();
+			System.out.println();
+		}
+		
 	}
 }
