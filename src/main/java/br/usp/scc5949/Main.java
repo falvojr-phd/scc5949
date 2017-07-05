@@ -72,7 +72,7 @@ public class Main {
 		nhlInfluences.put(12, Lists.newArrayList(8, 9, 10));
 		nhlInfluences.put(13, Lists.newArrayList(0, 2, 3, 4, 11));
 
-		final String path = CLASS_LOADER.getResource("nhl.csv").getFile();
+		final String path = CLASS_LOADER.getResource("nhl-without-na.csv").getFile();
 		Main.whritePossibilitiesTables(path, nhlInfluences);
 	}
 

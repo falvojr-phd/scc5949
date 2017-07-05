@@ -68,7 +68,7 @@ public class Node {
 	}
 
 	public NodePrinter evalProbabilities() {
-		// Verify if node is marginal (only yourself influence)
+		// Verify if node is marginal (only yourself influence).
 		if (this.influences.size() == 1) {
 			final Double sum = (double) this.values.size();
 			final Map<String, Double> mappedValues = this.values.stream()
@@ -88,17 +88,23 @@ public class Node {
 				if (!groupKey.equals(key)) {
 					groupKey = key;
 					if (!groupKey.isEmpty()) {
-						final Double sum = auxProbabilities.values().stream().mapToDouble(Number::doubleValue).sum();
-						final Map<String, Double> mappedValues = auxProbabilities.entrySet().stream()
-								.collect(Collectors.toMap(Map.Entry::getKey, e -> evalAverage(e.getValue(), sum)));
-						this.probabilities.putAll(mappedValues);
+						this.putAllProbabilities(auxProbabilities);
 						auxProbabilities.clear();
 					}
 				}
 				auxProbabilities.put(entry.getElement(), Long.valueOf(entry.getCount()));
 			}
+			// Save last grouped key.
+			this.putAllProbabilities(auxProbabilities);
 		}
 		return new NodePrinter();
+	}
+
+	private void putAllProbabilities(final Map<String, Long> auxProbabilities) {
+		final Double sum = auxProbabilities.values().stream().mapToDouble(Number::doubleValue).sum();
+		final Map<String, Double> mappedValues = auxProbabilities.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> this.evalAverage(e.getValue(), sum)));
+		this.probabilities.putAll(mappedValues);
 	}
 	
 	private double evalAverage(Long valueCount, Double sum) {
