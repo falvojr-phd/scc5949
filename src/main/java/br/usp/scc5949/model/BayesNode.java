@@ -19,7 +19,7 @@ import dnl.utils.text.table.TextTable;
  * 
  * @author falvojr
  */
-public class Node {
+public class BayesNode {
 
 	private Integer id;
 	private String name;
@@ -27,7 +27,7 @@ public class Node {
 	private List<String> values = new ArrayList<>();;
 	private Map<String, Double> probabilities = new TreeMap<>();
 
-	public Node(Integer id, String name, List<Integer> influences) {
+	public BayesNode(Integer id, String name, List<Integer> influences) {
 		this.id = id;
 		this.name = name;
 		this.influences = influences;
