@@ -30,7 +30,7 @@ public class Main {
 		final int pathIndex = dirIndex + 1;
 		if (dirIndex > -1) {
 		    try {
-		        final String path = Paths.get(args[pathIndex]).getFileName().toString();
+		        final String path = Paths.get(args[pathIndex]).toString();
 				final int bcIndex = ArrayUtils.indexOf(args, "-bc");
 				final int nhlIndex = ArrayUtils.indexOf(args, "-nhl");
 		        if (bcIndex != -1) {
