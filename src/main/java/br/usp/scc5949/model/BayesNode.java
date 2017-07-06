@@ -72,14 +72,13 @@ public class BayesNode {
 		if (this.influences.size() == 1) {
 			final Double sum = (double) this.values.size();
 			final Map<String, Double> mappedValues = this.values.stream()
-					.collect(Collectors.groupingBy(e -> e, Collectors.counting())).entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, e -> evalAverage(e.getValue(), sum)));
+					.collect(Collectors.groupingBy(e -> e, Collectors.counting()))
+					.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, e -> average(e.getValue(), sum)));
 			this.probabilities.putAll(mappedValues);
-
 		} else {
 			String groupKey = "";
-			final Map<String, Long> auxProbabilities = new TreeMap<>();
-
+			final Map<String, Long> groupProbabilities = new TreeMap<>();
 			final Set<Entry<String>> entrySet = TreeMultiset.create(this.values).entrySet();
 			for (Entry<String> entry : entrySet) {
 				final String[] values = entry.getElement().split("\\s+");
@@ -88,26 +87,26 @@ public class BayesNode {
 				if (!groupKey.equals(key)) {
 					groupKey = key;
 					if (!groupKey.isEmpty()) {
-						this.putAllProbabilities(auxProbabilities);
-						auxProbabilities.clear();
+						this.putGroupProbabilities(groupProbabilities);
+						groupProbabilities.clear();
 					}
 				}
-				auxProbabilities.put(entry.getElement(), Long.valueOf(entry.getCount()));
+				groupProbabilities.put(entry.getElement(), Long.valueOf(entry.getCount()));
 			}
 			// Save last grouped key.
-			this.putAllProbabilities(auxProbabilities);
+			this.putGroupProbabilities(groupProbabilities);
 		}
 		return new NodePrinter();
 	}
 
-	private void putAllProbabilities(final Map<String, Long> auxProbabilities) {
+	private void putGroupProbabilities(final Map<String, Long> auxProbabilities) {
 		final Double sum = auxProbabilities.values().stream().mapToDouble(Number::doubleValue).sum();
 		final Map<String, Double> mappedValues = auxProbabilities.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> this.evalAverage(e.getValue(), sum)));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> this.average(e.getValue(), sum)));
 		this.probabilities.putAll(mappedValues);
 	}
 	
-	private double evalAverage(Long valueCount, Double sum) {
+	private double average(Long valueCount, Double sum) {
 		return valueCount / sum;
 	}
 	
